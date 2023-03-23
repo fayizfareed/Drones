@@ -1,3 +1,7 @@
+using Drones_WebAPI.DataAccess;
+using Drones_WebAPI.Global;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,8 +11,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContext<DronesDbContext>(x => x.UseInMemoryDatabase("DroneDB"));
+
 var app = builder.Build();
 
+GlobalValues.SeedDatabase(app);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

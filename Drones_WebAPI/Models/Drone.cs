@@ -8,5 +8,7 @@
         public double WeightLimit { get; set; }
         public double BatteryCapacity { get; set; }
         public string State { get; set; }
+
+        public ICollection<Medication> Medications { get; set; }
     }
 }
