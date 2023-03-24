@@ -167,5 +167,22 @@ namespace Drones_WebAPI.Controllers
             return new JsonResult(new { status = "Success", droneId = droneExist.Id, messge = "Drone State Changed Successfully" });
         }
 
+        [HttpGet]
+        [Route("GetDronesBySerilNumber/{serialnumber}")]
+        public IEnumerable<DroneDTO> GetDronesBySerilNumber(string serialnumber)
+        {
+            return _dbContext.Drones.Where(xd => xd.SerialNumber == serialnumber).Select(x =>
+            new DroneDTO()
+            {
+                Id = x.Id,
+                SerialNumber = x.SerialNumber,
+                Model = x.Model,
+                WeightLimit = x.WeightLimit,
+                BatteryCapacity = x.BatteryCapacity,
+                State = x.State
+            }
+            ).ToList();
+        }
+
     }
 }
