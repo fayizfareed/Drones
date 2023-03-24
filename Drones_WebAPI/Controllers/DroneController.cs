@@ -184,5 +184,22 @@ namespace Drones_WebAPI.Controllers
             ).ToList();
         }
 
+        [HttpGet]
+        [Route("GetDroneById/{id:long}")]
+        public IEnumerable<DroneDTO> GetDroneById(long id)
+        {
+            return _dbContext.Drones.Where(xd => xd.Id == id).Select(x =>
+            new DroneDTO()
+            {
+                Id = x.Id,
+                SerialNumber = x.SerialNumber,
+                Model = x.Model,
+                WeightLimit = x.WeightLimit,
+                BatteryCapacity = x.BatteryCapacity,
+                State = x.State
+            }
+            ).ToList();
+        }
+
     }
 }
