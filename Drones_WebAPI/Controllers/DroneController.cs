@@ -274,5 +274,12 @@ namespace Drones_WebAPI.Controllers
                  .ToList();
         }
 
+        [HttpGet]
+        [Route("GetBatteryLevel/{id:long}")]
+        public IEnumerable<DroneBatteryDTO> AvailableDrones(long id)
+        {
+            return _dbContext.Drones.Where(drone => drone.Id == id).Select(droneSingle => new DroneBatteryDTO() { BatteryCapacity = droneSingle.BatteryCapacity }).ToList();
+        }
+
     }
 }
