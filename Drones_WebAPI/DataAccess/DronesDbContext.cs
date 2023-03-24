@@ -10,6 +10,11 @@ namespace Drones_WebAPI.DataAccess
         {
 
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Medication>().HasOne(d => d.Drone).WithMany(dc => dc.Medications);
+            base.OnModelCreating(modelBuilder);
+        }
         public DbSet<Drone> Drones { get; set; }
         public DbSet<Medication> Medications { get; set; }
     }
