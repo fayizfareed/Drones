@@ -234,5 +234,22 @@ namespace Drones_WebAPI.Controllers
             ).ToList();
         }
 
+        [HttpGet]
+        [Route("GetLoadingHistory/{id:long}")]
+        public IEnumerable<MedicationHistoryDTO> GetLoadingHistory(long id)
+        {
+            return _dbContext.Medications.Where(xd => xd.DroneId == id).Select(x =>
+            new MedicationHistoryDTO()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                Weight = x.Weight,
+                Image = x.Image,
+                State = x.State
+            }
+            ).ToList();
+        }
+
     }
 }
