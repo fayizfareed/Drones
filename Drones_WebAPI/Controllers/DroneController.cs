@@ -251,5 +251,28 @@ namespace Drones_WebAPI.Controllers
             ).ToList();
         }
 
+        [HttpGet]
+        [Route("AvailableDrones/")]
+        public IEnumerable<DroneAvilableDTO> AvailableDrones()
+        {
+            return _dbContext.Medications.Where(medication => medication.State == MedicationState.NOTDELIVERED.ToString())
+                 .GroupBy(medicationG => medicationG.DroneId)
+                 .Select(medicationD => new { DroneId = medicationD.Key, CurrentWeight = medicationD.Sum(medicationS => medicationS.Weight) })
+                 .Join(_dbContext.Drones, medicationData => medicationData.DroneId, droneData => droneData.Id, (medicationData, droneData) =>
+                 new DroneAvilableDTO()
+                 {
+                     Id = droneData.Id,
+                     BatteryCapacity = droneData.BatteryCapacity,
+                     Model = droneData.Model,
+                     SerialNumber = droneData.SerialNumber,
+                     State = droneData.State,
+                     WeightLimit = droneData.WeightLimit,
+                     CurrentWeight = medicationData.CurrentWeight
+                 }).Where(droneW => (droneW.State == DroneState.IDLE.ToString()
+                                             || droneW.State == DroneState.DELIVERED.ToString()
+                                             || droneW.State == DroneState.LOADING.ToString()) && droneW.CurrentWeight < droneW.WeightLimit)
+                 .ToList();
+        }
+
     }
 }
