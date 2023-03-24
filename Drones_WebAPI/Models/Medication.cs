@@ -7,6 +7,7 @@
         public double Weight { get; set; }
         public string Code { get; set; }
         public string Image { get; set; }
+        public string State { get; set; }
 
 
         public long DroneId { get; set; }

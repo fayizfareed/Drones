@@ -8,4 +8,8 @@
     {
         IDLE, LOADING, LOADED, DELIVERING, DELIVERED, RETURNING
     }
+    public enum MedicationState
+    {
+        DELIVERED, NOTDELIVERED
+    }
 }
