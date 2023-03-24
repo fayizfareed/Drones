@@ -201,5 +201,22 @@ namespace Drones_WebAPI.Controllers
             ).ToList();
         }
 
+        [HttpGet]
+        [Route("GetDrones")]
+        public IEnumerable<DroneDTO> GetDrones()
+        {
+            return _dbContext.Drones.Select(x =>
+            new DroneDTO()
+            {
+                Id = x.Id,
+                SerialNumber = x.SerialNumber,
+                Model = x.Model,
+                WeightLimit = x.WeightLimit,
+                BatteryCapacity = x.BatteryCapacity,
+                State = x.State
+            }
+            ).ToList();
+        }
+
     }
 }
