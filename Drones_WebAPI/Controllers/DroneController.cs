@@ -131,5 +131,41 @@ namespace Drones_WebAPI.Controllers
             return new JsonResult(new { status = "Success", droneId = drone.Id, mediccationId = id, messge = "Drone Loaded Successfully" });
         }
 
+        [HttpPut]
+        [Route("ChangeDroneState/{id:long}")]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult ChangeDroneState(long id, [FromBody] DroneStateDTO droneStateDTO)
+        {
+            Drone droneExist = _dbContext.Drones.Where(x => x.Id == id).FirstOrDefault();
+            if (droneExist == null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return new JsonResult(new { status = "Failed", messge = "Drone not found for the id" });
+            }
+            if (droneStateDTO.State != DroneState.DELIVERED.ToString()
+                && droneStateDTO.State != DroneState.RETURNING.ToString()
+                && droneStateDTO.State != DroneState.LOADING.ToString()
+                && droneStateDTO.State != DroneState.LOADED.ToString()
+                && droneStateDTO.State != DroneState.DELIVERING.ToString()
+                && droneStateDTO.State != DroneState.IDLE.ToString())
+            {
+                Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return new JsonResult(new { status = "Failed", messge = "State must be one of these RETURNING, DELIVERED, LOADING, DELIVERING, IDLE" });
+            }
+            if (droneStateDTO.State == DroneState.DELIVERED.ToString() || droneStateDTO.State == DroneState.RETURNING.ToString())
+            {
+                _dbContext.Medications.Where(x => x.DroneId == droneExist.Id && x.State == MedicationState.NOTDELIVERED.ToString()).ToList()
+                   .ForEach(xd => xd.State = MedicationState.DELIVERED.ToString());
+
+            }
+            droneExist.State = droneStateDTO.State;
+
+            _dbContext.Drones.Update(droneExist);
+            _dbContext.SaveChanges();
+
+            return new JsonResult(new { status = "Success", droneId = droneExist.Id, messge = "Drone State Changed Successfully" });
+        }
+
     }
 }
