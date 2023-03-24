@@ -68,6 +68,67 @@ namespace Drones_WebAPI.Controllers
 
             return new JsonResult(new { status = "Success", droneId = id, messge = "Data Saved Successfully" });
         }
+        [HttpPost]
+        [Route("LoadDrone")]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult LoadDrone([FromBody] NewMedicationDTO medicationDTO)
+        {
+            Drone drone = _dbContext.Drones.Where(x => x.Id == medicationDTO.DroneId || x.SerialNumber == medicationDTO.DroneSerialNumber).FirstOrDefault();
+            Medication medicationExist = _dbContext.Medications.Where(x => x.Code == medicationDTO.Code).FirstOrDefault();
+            if (drone == null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return new JsonResult(new { status = "Failed", messge = "Drone not found for the id or serial number" });
+            }
+            if (drone.State != DroneState.IDLE.ToString() && drone.State != DroneState.LOADING.ToString())
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return new JsonResult(new { status = "Failed", messge = "Drone is not in idle state or loading state. Current drone state is " + drone.State });
+            }
+            if (drone.State == DroneState.LOADING.ToString())
+            {
+                double currentWeight = _dbContext.Medications.Where(x => x.State == MedicationState.NOTDELIVERED.ToString() && x.DroneId == drone.Id).Sum(y => y.Weight);
+                if (currentWeight + medicationDTO.Weight > drone.WeightLimit)
+                {
+                    Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                    return new JsonResult(new { status = "Failed", messge = "Medication weight will increase drone max weight. Drone max Weight : " + drone.WeightLimit + ". Current Weight : " + currentWeight });
+                }
+            }
+            if (!Regex.IsMatch(medicationDTO.Name, "^[a-zA-Z0-9_-]+$"))
+            {
+                Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return new JsonResult(new { status = "Failed", messge = "Medication name must be mixed of letters, number, '-' and '_'" });
+            }
+            if (!Regex.IsMatch(medicationDTO.Code, "^[A-Z0-9_]+$"))
+            {
+                Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return new JsonResult(new { status = "Failed", messge = "Medication code must be mixed of upper case letters, number, and '_'" });
+            }
+            if (medicationExist != null)
+            {
+                Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return new JsonResult(new { status = "Failed", messge = "There is a medication with same code" });
+            }
+            long id = _dbContext.Medications.Max(x => x.Id) + 1;
+            Medication medication = new Medication()
+            {
+                Id = id,
+                Name = medicationDTO.Name,
+                Code = medicationDTO.Code,
+                Drone = drone,
+                Image = medicationDTO.Image,
+                State = MedicationState.NOTDELIVERED.ToString(),
+                Weight = medicationDTO.Weight
+            };
+
+            drone.State = DroneState.LOADING.ToString();
+            _dbContext.Medications.Add(medication);
+            _dbContext.Drones.Update(drone);
+            _dbContext.SaveChanges();
+
+            return new JsonResult(new { status = "Success", droneId = drone.Id, mediccationId = id, messge = "Drone Loaded Successfully" });
+        }
 
     }
 }
