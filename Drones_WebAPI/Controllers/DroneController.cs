@@ -1,7 +1,11 @@
 ﻿using Drones_WebAPI.DataAccess;
+using Drones_WebAPI.DTO;
+using Drones_WebAPI.Global;
 using Drones_WebAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Drones_WebAPI.Controllers
 {
@@ -14,10 +18,6 @@ namespace Drones_WebAPI.Controllers
         {
             _dbContext = dbContext;
         }
-        [HttpGet]
-        public IEnumerable<Medication> GetDrones()
-        {
-            return _dbContext.Medications.ToList();
-        }
+
     }
 }
