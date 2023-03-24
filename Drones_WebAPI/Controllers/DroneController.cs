@@ -68,6 +68,7 @@ namespace Drones_WebAPI.Controllers
 
             return new JsonResult(new { status = "Success", droneId = id, messge = "Data Saved Successfully" });
         }
+
         [HttpPost]
         [Route("LoadDrone")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
