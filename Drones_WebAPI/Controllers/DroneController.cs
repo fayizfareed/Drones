@@ -218,5 +218,21 @@ namespace Drones_WebAPI.Controllers
             ).ToList();
         }
 
+        [HttpGet]
+        [Route("GetLoadings/{id:long}")]
+        public IEnumerable<MedicationDTO> GetLoadings(long id)
+        {
+            return _dbContext.Medications.Where(xd => xd.DroneId == id && xd.State == MedicationState.NOTDELIVERED.ToString()).Select(x =>
+            new MedicationDTO()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                Weight = x.Weight,
+                Image = x.Image
+            }
+            ).ToList();
+        }
+
     }
 }
