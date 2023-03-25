@@ -179,6 +179,31 @@ namespace Drones_WebAPI.Controllers
             return new JsonResult(new { status = "Success", droneId = droneExist.Id, messge = "Drone State Changed Successfully" });
         }
 
+        [HttpPut]
+        [Route("ChangeBatteryLevel/{id:long}")]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult ChangeBatteryLevel(long id, [FromBody] DroneBatteryDTO droneBatteryDTO)
+        {
+            Drone droneExist = _dbContext.Drones.Where(x => x.Id == id).FirstOrDefault();
+            if (droneExist == null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return new JsonResult(new { status = "Failed", messge = "Drone not found for the id" });
+            }
+            if (droneBatteryDTO.BatteryCapacity > 100.00)
+            {
+                Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return new JsonResult(new { status = "Failed", messge = "Battery level must be less than 100%" });
+            }
+            droneExist.BatteryCapacity = droneBatteryDTO.BatteryCapacity;
+
+            _dbContext.Drones.Update(droneExist);
+            _dbContext.SaveChanges();
+
+            return new JsonResult(new { status = "Success", droneId = droneExist.Id, messge = "Drone Battery Level Changed Successfully" });
+        }
+
         [HttpGet]
         [Route("GetDronesBySerilNumber/{serialnumber}")]
         public IEnumerable<DroneDTO> GetDronesBySerilNumber(string serialnumber)

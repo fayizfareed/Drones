@@ -30,7 +30,7 @@ namespace Drones_WebAPI.Global
             Console.WriteLine("");
             foreach (Drone drone in drones)
             {
-                string message = "Battery Level For Drone " + drone.SerialNumber + " Is " + drone.BatteryCapacity + "%";
+                string message = "Battery Level For Drone " + drone.SerialNumber + " Is " + drone.BatteryCapacity + "% | Drone Id : " + drone.Id;
                 MyEventLog.WriteLog(message);
                 Console.WriteLine(message);
             }
