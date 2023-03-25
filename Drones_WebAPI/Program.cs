@@ -10,19 +10,20 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<DronesDbContext>(x => x.UseInMemoryDatabase("DroneDB"));
+    
+builder.Services.AddDbContextFactory<DronesDbContext>(x => x.UseInMemoryDatabase("DroneDB"));
+builder.Services.AddHostedService<PeriodicTask>();
 
 var app = builder.Build();
 
 GlobalValues.SeedDatabase(app);
+MyEventLog.RegisterEventLog();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
