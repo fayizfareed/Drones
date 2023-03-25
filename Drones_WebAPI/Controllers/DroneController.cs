@@ -158,6 +158,13 @@ namespace Drones_WebAPI.Controllers
                 Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                 return new JsonResult(new { status = "Failed", messge = "State must be one of these RETURNING, DELIVERED, LOADING, DELIVERING, IDLE" });
             }
+            if (droneStateDTO.State == DroneState.LOADING.ToString() && droneExist.BatteryCapacity < 25.00)
+            {
+
+                Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return new JsonResult(new { status = "Failed", messge = "Drone's battery level is below 25%" });
+
+            }
             if (droneStateDTO.State == DroneState.DELIVERED.ToString() || droneStateDTO.State == DroneState.RETURNING.ToString())
             {
                 _dbContext.Medications.Where(x => x.DroneId == droneExist.Id && x.State == MedicationState.NOTDELIVERED.ToString()).ToList()
