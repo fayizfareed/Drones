@@ -111,6 +111,11 @@ namespace Drones_WebAPI.Controllers
                 Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                 return new JsonResult(new { status = "Failed", messge = "There is a medication with same code" });
             }
+            if (drone.BatteryCapacity < 25.00)
+            {
+                Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return new JsonResult(new { status = "Failed", messge = "Drone's battery level is below 25%" });
+            }
             long id = _dbContext.Medications.Max(x => x.Id) + 1;
             Medication medication = new Medication()
             {
@@ -276,7 +281,7 @@ namespace Drones_WebAPI.Controllers
 
         [HttpGet]
         [Route("GetBatteryLevel/{id:long}")]
-        public IEnumerable<DroneBatteryDTO> AvailableDrones(long id)
+        public IEnumerable<DroneBatteryDTO> GetBatteryLevel(long id)
         {
             return _dbContext.Drones.Where(drone => drone.Id == id).Select(droneSingle => new DroneBatteryDTO() { BatteryCapacity = droneSingle.BatteryCapacity }).ToList();
         }
