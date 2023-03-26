@@ -291,7 +291,7 @@ namespace Drones_WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("AvailableDrones/")]
+        [Route("AvailableDrones")]
         public IEnumerable<DroneAvilableDTO> AvailableDrones()
         {
             return _dbContext.Medications.Where(medication => medication.State == MedicationState.NOTDELIVERED.ToString())
