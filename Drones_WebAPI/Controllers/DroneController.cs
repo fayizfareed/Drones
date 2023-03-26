@@ -206,7 +206,8 @@ namespace Drones_WebAPI.Controllers
 
         [HttpGet]
         [Route("GetDronesBySerilNumber/{serialnumber}")]
-        public IEnumerable<DroneDTO> GetDronesBySerilNumber(string serialnumber)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public DroneDTO? GetDronesBySerilNumber(string serialnumber)
         {
             return _dbContext.Drones.Where(xd => xd.SerialNumber == serialnumber).Select(x =>
             new DroneDTO()
@@ -218,12 +219,13 @@ namespace Drones_WebAPI.Controllers
                 BatteryCapacity = x.BatteryCapacity,
                 State = x.State
             }
-            ).ToList();
+            ).FirstOrDefault();
         }
 
         [HttpGet]
         [Route("GetDroneById/{id:long}")]
-        public IEnumerable<DroneDTO> GetDroneById(long id)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public DroneDTO? GetDroneById(long id)
         {
             return _dbContext.Drones.Where(xd => xd.Id == id).Select(x =>
             new DroneDTO()
@@ -235,7 +237,7 @@ namespace Drones_WebAPI.Controllers
                 BatteryCapacity = x.BatteryCapacity,
                 State = x.State
             }
-            ).ToList();
+            ).FirstOrDefault();
         }
 
         [HttpGet]
@@ -313,9 +315,10 @@ namespace Drones_WebAPI.Controllers
 
         [HttpGet]
         [Route("GetBatteryLevel/{id:long}")]
-        public IEnumerable<DroneBatteryDTO> GetBatteryLevel(long id)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public DroneBatteryDTO? GetBatteryLevel(long id)
         {
-            return _dbContext.Drones.Where(drone => drone.Id == id).Select(droneSingle => new DroneBatteryDTO() { BatteryCapacity = droneSingle.BatteryCapacity }).ToList();
+            return _dbContext.Drones.Where(drone => drone.Id == id).Select(droneSingle => new DroneBatteryDTO() { BatteryCapacity = droneSingle.BatteryCapacity }).FirstOrDefault();
         }
 
     }
